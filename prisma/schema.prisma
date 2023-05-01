@@ -11,11 +11,12 @@ datasource db {
 }
 
 model Employee {
-  id         Int      @id @default(autoincrement())
-  name       String
-  position   Position @relation(fields: [positionId], references: [id])
-  positionId Int
-  Tenure     Tenure[]
+  id           Int      @id @default(autoincrement())
+  name         String
+  profileImage String?
+  position     Position @relation(fields: [positionId], references: [id])
+  positionId   Int
+  Tenure       Tenure[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -23,7 +24,7 @@ model Employee {
 
 model Position {
   id       Int        @id @default(autoincrement())
-  title    String 
+  title    String
   Employee Employee[]
 
   createdAt DateTime @default(now())
@@ -31,8 +32,8 @@ model Position {
 }
 
 model Tenure {
-  id         Int      @id @default(autoincrement())
-  employee   Employee @relation(fields: [employeeId], references: [id])
+  id         Int       @id @default(autoincrement())
+  employee   Employee  @relation(fields: [employeeId], references: [id])
   employeeId Int
   position   String
   startDate  DateTime
@@ -41,4 +42,3 @@ model Tenure {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
-
