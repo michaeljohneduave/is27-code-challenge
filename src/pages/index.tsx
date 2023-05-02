@@ -1,78 +1,69 @@
 import { Inter } from "next/font/google";
 import { trpc } from "@/utils/trpc";
-import { inferProcedureOutput } from "@trpc/server";
-import { AppRouter } from "@/server/routers/_app";
-import ReactNiceAvatar from "react-nice-avatar";
-import { ReactElement } from "react";
-import Image from "next/image";
-
-import blankAvatar from "../../public/blank.jpg";
+import Position from "@/components/position";
 
 const inter = Inter({ subsets: ["latin"] });
 
-type Positions = inferProcedureOutput<AppRouter["position"]["list"]>;
-type Position = inferProcedureOutput<AppRouter["position"]["byId"]>;
+function group(title: string) {
+  let t = title;
+  const positions = trpc.position.list.useQuery(
+    {
+      title,
+      limit: 100,
+      page: 1,
+    },
+    {
+      staleTime: 3000,
+    }
+  );
 
-function position(position: Position) {
-  let avatar: ReactElement;
-  let name: string;
+  if (positions.data && positions.data.length > 1) {
+    t = title + "s";
+  }
 
-  if (position?.employee?.avatar) {
-    avatar = (
-      <ReactNiceAvatar
-        className="h-32 w-32 rounded-full"
-        {...JSON.parse(position.employee.avatar)}
-      />
-    );
-    name = position.employee.name;
-  } else {
-    avatar = (
-      <div  className="h-32 w-32 rounded-full">
-        <Image src={blankAvatar} alt="" />
-      </div>
-    );
-    name = "Vacant McVacancy";
+  const employees = positions?.data?.filter((p) => {
+    return p.employeeId;
+  });
+
+  if (
+    !positions?.data?.length ||
+    (positions?.data?.length && title === "No Role" && !employees?.length)
+  ) {
+    return;
   }
 
   return (
-    <div className="flex flex-col items-center gap-x-6">
-      {avatar}
-      <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-        {name}
-      </h3>
-      <p className="text-sm font-semibold leading-6 text-indigo-600">
-        {position?.title}
-      </p>
-    </div>
-  );
-}
-
-function group(title: string) {
-  const { data: positions } = trpc.position.list.useQuery({
-    title,
-    limit: 100,
-    page: 1,
-  }, {
-    staleTime: 3000
-  });
-
-  return (
-    <div className="flex flex-wrap flex-row justify-center py-10 hover:bg-slate-50 rounded-xl">
-      {positions?.map((p) => {
-        return (
-          <div key={p.id} className="p-10 hover:scale-125 hover:cursor-pointer">
-            {position(p)}
-          </div>
-        );
-      })}
+    <div>
+      {title === "No Role" ? (
+        <div className="mt-10 font-bold text-center leading-9 text-2xl">
+          {t}
+        </div>
+      ) : (
+        ""
+      )}
+      <div className="flex flex-wrap flex-row justify-center py-10 ">
+        {positions.data?.map((p) => {
+          return (
+            <div
+              key={p.id}
+              className="p-5 hover:scale-110 hover:bg-slate-50 rounded-xl group/item"
+            >
+              <Position {...p} />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
 export default function Home() {
-  const { data: titles } = trpc.position.types.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data: titles } = trpc.position.types.useQuery(
+    { isNoRole: false },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <main className={`min-h-screen p-24 ${inter.className}`}>

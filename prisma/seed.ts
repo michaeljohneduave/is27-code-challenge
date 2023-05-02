@@ -16,6 +16,7 @@ const roles: Role[] = [
   { role: "Manager", level: 2 },
   { role: "Senior Developer", level: 3 },
   { role: "Junior Developer", level: 4 },
+  { role: "No Role", level: 5},
 ];
 
 
@@ -74,10 +75,12 @@ async function main() {
 
   await createPositions(roles[0], 1);
 
-  for (let i = 1; i < roles.length; i += 1) {
+  for (let i = 1; i < roles.length - 1; i += 1) {
     count = count * 1.618;
     await createPositions(roles[i], Math.ceil(count));
   }
+
+  await createPositions(roles[roles.length - 1], 1);
 }
 
 main()
