@@ -199,6 +199,8 @@ export const positionRouter = router({
         },
       });
 
+      console.log(position);
+
       if (position) {
         // since position-employee relation is 1:N
         // we can't use the employee record to update its position in one go
@@ -207,17 +209,29 @@ export const positionRouter = router({
             employeeId: employeeId,
           },
         });
-      } else if (title === "Director") {
+      } else if (position && title === "Director") {
         throw new Error("Only one director is allowed");
-      } else {
+      } else if (!position) {
         position = await prisma.position.create({
           data: {
             title,
             level: roles.filter((r) => r.role === title)[0].level,
           },
         });
+      console.log(position,employeeId,  "created");
+
       }
       // New title/role that is not No Role
+
+      await prisma.position.update({
+        where: {
+          employeeId: employeeId,
+        },
+        data: {
+          employeeId: null,
+        },
+      });
+
       res = await prisma.position.update({
         where: {
           id: position.id,
