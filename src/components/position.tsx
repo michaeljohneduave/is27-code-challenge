@@ -3,9 +3,6 @@ import Image from "next/image";
 import {
   FaCheck,
   FaEdit,
-  FaMinusCircle,
-  FaMinusSquare,
-  FaTrash,
   FaWindowClose,
 } from "react-icons/fa";
 import ReactNiceAvatar from "react-nice-avatar";

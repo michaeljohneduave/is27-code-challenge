@@ -5,8 +5,7 @@ import { faker } from "@faker-js/faker";
 import { genConfig } from "react-nice-avatar";
 
 export const employeeRouter = router({
-  create: procedure
-  .mutation(async function () {
+  create: procedure.mutation(async function () {
     const positionRec = await prisma.position.create({
       data: {
         title: "No Role",
