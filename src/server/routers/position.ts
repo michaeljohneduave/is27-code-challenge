@@ -3,6 +3,20 @@ import { procedure, router } from "../trpc";
 import { prisma } from "@/server/prisma";
 import { Prisma } from "@prisma/client";
 
+export type Role = {
+  role: string;
+  level: number;
+};
+
+export const roles: Role[] = [
+  { role: "Director", level: 0 },
+  { role: "Senior Manager", level: 1 },
+  { role: "Manager", level: 2 },
+  { role: "Senior Developer", level: 3 },
+  { role: "Junior Developer", level: 4 },
+  { role: "No Role", level: 5 },
+];
+
 export const positionRouter = router({
   types: procedure
     .input(
@@ -20,13 +34,28 @@ export const positionRouter = router({
         };
       }
 
-      const types = await prisma.position.findMany({
+      let types = await prisma.position.findMany({
         select: {
           title: true,
         },
-        where,
+        // where,
         distinct: ["title"],
       });
+
+      if (isNoRole) {
+        const director = await prisma.position.findFirst({
+          where: {
+            title: "Director",
+            employeeId: {
+              not: null,
+            },
+          },
+        });
+  
+        if (director) {
+          types = types.filter((t) => t.title !== director.title);
+        }
+      }
 
       return types;
     }),
@@ -178,20 +207,27 @@ export const positionRouter = router({
             employeeId: employeeId,
           },
         });
-        
-        // New title/role that is not No Role
-        res = await prisma.position.update({
-          where: {
-            id: position.id,
-          },
+      } else if (title === "Director") {
+        throw new Error("Only one director is allowed");
+      } else {
+        position = await prisma.position.create({
           data: {
-            employeeId: employeeId,
+            title,
+            level: roles.filter((r) => r.role === title)[0].level,
           },
         });
       }
+      // New title/role that is not No Role
+      res = await prisma.position.update({
+        where: {
+          id: position.id,
+        },
+        data: {
+          employeeId: employeeId,
+        },
+      });
 
       //@todos: add tenure record
-
       return res;
     }),
 });

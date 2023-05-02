@@ -1,24 +1,10 @@
+import { Role, roles } from "@/server/routers/position";
 import { faker } from "@faker-js/faker";
 import { Employee, Position, Prisma, PrismaClient } from "@prisma/client";
 import https from "https";
 import { genConfig } from "react-nice-avatar";
 
 const prisma = new PrismaClient();
-
-type Role = {
-  role: string;
-  level: number;
-};
-
-const roles: Role[] = [
-  { role: "Director", level: 0 },
-  { role: "Senior Manager", level: 1 },
-  { role: "Manager", level: 2 },
-  { role: "Senior Developer", level: 3 },
-  { role: "Junior Developer", level: 4 },
-  { role: "No Role", level: 5},
-];
-
 
 async function createPositions(role: Role, posCount: number): Promise<void> {
   const vacantCount = Math.floor(posCount * 0.2);
