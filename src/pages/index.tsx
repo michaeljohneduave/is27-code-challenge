@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import { trpc } from "@/utils/trpc";
 import Position from "@/components/position";
+import { useState } from "react";
+import {debounce, throttle} from "lodash"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -58,18 +60,49 @@ function group(title: string) {
 }
 
 export default function Home() {
+  const utils = trpc.useContext();
+  const [adding, setAdding] = useState(false);
   const { data: titles } = trpc.position.types.useQuery(
     { isNoRole: false },
     {
       refetchOnWindowFocus: false,
     }
   );
+  const addEmployee = trpc.employee.create.useMutation({
+    onSettled() {
+      setAdding(false);
+      utils.position.list.refetch();
+      utils.position.types.refetch();
+    },
+  });
+  let btnLabel = "Add Employees";
+
+  if (adding) {
+    btnLabel = "Adding Employees..";
+  }
+
+  const handleAdd = throttle(() => {
+    if (!adding) {
+      setAdding(true);
+      addEmployee.mutate();
+    }
+  }, 1000, {
+    trailing: true,
+  });
 
   return (
     <main className={`min-h-screen p-24 ${inter.className}`}>
       <div className="bg-white flex flex-wrap flex-col items-center p-5">
         <div className="p-10 text-4xl font-bold">Team Directory</div>
         {titles?.map(({ title }) => group(title))}
+        <div className="pt-20">
+          <button
+            className="text-base font-medium rounded-lg p-3 bg-sky-500 text-white"
+            onClick={handleAdd}
+          >
+            {btnLabel}
+          </button>
+        </div>
       </div>
     </main>
   );

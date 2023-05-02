@@ -174,10 +174,12 @@ export default function Position(position: Position) {
   };
 
   const handleRemove = () => {
-    vacatePosition.mutate({
-      id: position?.id as number,
-      employeeId: position?.employeeId as number,
-    });
+    if (position?.title !== "No Role" && position?.title !== "Director") {
+      vacatePosition.mutate({
+        id: position?.id as number,
+        employeeId: position?.employeeId as number,
+      });
+    }
   };
 
   const EditName = () => {
@@ -201,7 +203,9 @@ export default function Position(position: Position) {
   return (
     <div className="min-w-fit flex flex-col items-center gap-x-6">
       <div className="ml-auto invisible group-hover/item:visible mt-2">
-        {type === "filled" ? (
+        {type === "filled" &&
+        position?.title !== "No Role" &&
+        position?.title !== "Director" ? (
           <FaWindowClose
             className="hover:cursor-pointer hover:scale-125"
             onClick={handleRemove}
