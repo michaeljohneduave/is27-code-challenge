@@ -19,13 +19,23 @@ The aim of this repository is to showcase and end-to-end type-safe framework usi
 ```bash
 DATABASE_URL='mysql://CONNECTION_STRING_HERE'
 ```
-4. After cloning this repository, you can now run the following bash commands.
+3. After cloning this repository, you can now run the following bash commands.
 ```bash
 npm install
 npm run dev
 ```
-
 4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+5. For Prisma, you can initailize ORM mapping and seed data using the following commands
+```bash
+npx prisma db push
+npx prisma db seed
+```
+6. For reseting the database, use the following commands
+```bash
+npx prisma migrate reset --skip-seed
+npx prisma db seed
+```
 
 # CI/CD
 
