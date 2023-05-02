@@ -1,10 +1,12 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import { trpc } from "@/utils/trpc";
 import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "@/server/routers/_app";
 import ReactNiceAvatar from "react-nice-avatar";
 import { ReactElement } from "react";
+import Image from "next/image";
+
+import blankAvatar from "../../public/blank.jpg";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +26,11 @@ function position(position: Position) {
     );
     name = position.employee.name;
   } else {
-    avatar = <img className="h-32 w-32 rounded-full" src="blank.jpg" alt="" />;
+    avatar = (
+      <div  className="h-32 w-32 rounded-full">
+        <Image src={blankAvatar} alt="" />
+      </div>
+    );
     name = "Vacant McVacancy";
   }
 
@@ -46,13 +52,15 @@ function group(title: string) {
     title,
     limit: 100,
     page: 1,
+  }, {
+    staleTime: 3000
   });
 
   return (
     <div className="flex flex-wrap flex-row justify-center py-10 hover:bg-slate-50 rounded-xl">
       {positions?.map((p) => {
         return (
-          <div className="p-10 hover:scale-125 hover:cursor-pointer">
+          <div key={p.id} className="p-10 hover:scale-125 hover:cursor-pointer">
             {position(p)}
           </div>
         );
