@@ -11,30 +11,31 @@ datasource db {
 }
 
 model Employee {
-  id           Int      @id @default(autoincrement())
-  name         String
-  profileImage String?
-  position     Position @relation(fields: [positionId], references: [id])
-  positionId   Int
-  Tenure       Tenure[]
+  id     Int     @id @default(autoincrement())
+  name   String
+  avatar String?
+  Tenure Tenure[]
+  Position  Position?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 }
 
 model Position {
-  id       Int        @id @default(autoincrement())
-  title    String
-  Employee Employee[]
+  id         Int      @id @default(autoincrement())
+  title      String
+  level      Int
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId Int?      @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 }
 
 model Tenure {
   id         Int       @id @default(autoincrement())
   employee   Employee  @relation(fields: [employeeId], references: [id])
-  employeeId Int
+  employeeId Int       @unique
   position   String
   startDate  DateTime
   endDate    DateTime?
