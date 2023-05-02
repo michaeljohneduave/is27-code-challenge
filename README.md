@@ -34,6 +34,7 @@ npx prisma db seed
 6. For reseting the database, use the following commands
 ```bash
 npx prisma migrate reset --skip-seed
+npx prisma db push
 npx prisma db seed
 ```
 
