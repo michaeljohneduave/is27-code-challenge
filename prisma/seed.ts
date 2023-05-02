@@ -32,7 +32,7 @@ async function createPositions(role: Role, posCount: number): Promise<void> {
         employee: {
           create: {
             name: faker.name.fullName({}),
-            avatar: JSON.stringify(genConfig()),
+            avatar: genConfig(),
           },
         },
       },

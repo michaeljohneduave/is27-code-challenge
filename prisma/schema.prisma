@@ -6,14 +6,15 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Employee {
   id     Int     @id @default(autoincrement())
   name   String
-  avatar String?
+  avatar Json?
   Tenure Tenure[]
   Position  Position?
 
