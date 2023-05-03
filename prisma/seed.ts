@@ -65,8 +65,6 @@ async function main() {
     count = count * 1.618;
     await createPositions(roles[i], Math.ceil(count));
   }
-
-  await createPositions(roles[roles.length - 1], 1);
 }
 
 main()
